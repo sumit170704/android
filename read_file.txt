@@ -1,0 +1,122 @@
+
+<--
+
+
+xml
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/text_view"
+        android:layout_width="411dp"
+        android:layout_height="55dp"
+        android:textSize="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/load_button"
+        android:layout_width="184dp"
+        android:layout_height="68dp"
+        android:text="Show Data"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.45"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.308" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+main
+
+
+
+
+package com.example.pro10
+
+import android.annotation.SuppressLint
+import android.content.Context
+import android.os.Bundle
+import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
+import android.widget.TextView
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
+
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var textView: TextView
+    private lateinit var loadButton: Button
+
+    @SuppressLint("MissingInflatedId")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        textView = findViewById(R.id.text_view)
+        loadButton = findViewById(R.id.load_button)
+
+        loadButton.setOnClickListener {
+            val fileContent = readFileFromAssets("info.txt")
+            textView.text = fileContent
+        }
+    }
+
+    private fun readFileFromAssets(fileName: String): String {
+        val stringBuilder = StringBuilder()
+
+        try {
+
+            val inputStream = assets.open(fileName)
+            val bufferedReader = BufferedReader(InputStreamReader(inputStream))
+            var line: String?
+
+
+            while (bufferedReader.readLine().also { line = it } != null) {
+                stringBuilder.append(line).append("\n")
+            }
+            bufferedReader.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+            return "Error reading file"
+        }
+
+
+        textView?.setText(stringBuilder)
+        val FILE_NAME="file.txt"
+        try {
+            val fos = openFileOutput(FILE_NAME, MODE_PRIVATE)
+            fos.write(stringBuilder.toString().toByteArray())
+            fos.close()
+
+        }catch(e:Exception){
+            e.printStackTrace()
+        }
+        return stringBuilder.toString()
+    }
+}
+
+
+
+
+assets folder bnavu
+   
+	info.txt banavi
+
+
+-->

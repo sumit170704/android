@@ -1,0 +1,224 @@
+<!--
+
+XML
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/txtNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Enter the number"
+        android:inputType="text"
+        android:textSize="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.661"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.172" />
+
+    <Button
+        android:id="@+id/btnSubmit"
+        android:layout_width="148dp"
+        android:layout_height="53dp"
+        android:text="Button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.315" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="292dp"
+        android:layout_height="51dp"
+        android:text="Enter the number between 1 to 7"
+        android:textAlignment="viewStart"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.655"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.141" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+MainActivity
+
+
+package com.example.pro4
+
+import android.content.Intent
+import android.os.Bundle
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.core.view.WindowCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+
+class MainActivity : ComponentActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        val txtnum = findViewById<EditText>(R.id.txtNumber)
+        val btnsub = findViewById<Button>(R.id.btnSubmit)
+
+        btnsub.setOnClickListener {
+            val num = txtnum.text.toString().toIntOrNull()
+
+            if (num == null || num <= 0 || num > 7) {
+                Toast.makeText(applicationContext, "Enter number between 1 to 7.", Toast.LENGTH_LONG).show()
+            } else {
+                val intent = Intent(applicationContext, MainActivity2::class.java)
+                intent.putExtra("number", num.toString())
+                startActivity(intent)
+            }
+        }
+    }
+}
+
+
+
+XML 2
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity2">
+
+    <ListView
+        android:id="@+id/myLst"
+        android:layout_width="398dp"
+        android:layout_height="732dp"
+        android:layout_alignParentTop="true"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.145"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.047"
+        tools:ignore="MissingConstraints" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+MainActivity 2
+
+
+
+package com.example.pro4
+
+import android.os.Bundle
+import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.ListView
+import androidx.activity.ComponentActivity
+import androidx.activity.enableEdgeToEdge
+import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+
+class MainActivity2 : ComponentActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_main2)
+
+        val mainView = findViewById<View>(R.id.main)
+        ViewCompat.setOnApplyWindowInsetsListener(mainView) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        val listView: ListView = findViewById(R.id.myLst)
+        val colors = arrayOf(R.color.colorGreen, R.color.colorGray, R.color.colorOrange, R.color.colorPink, R.color.colorRed, R.color.colorSkyBlue, R.color.colorYellow)
+        val arr = arrayOf("Green", "Gray", "Orange", "Pink", "Red", "SkyBlue", "Yellow")
+
+        val numberOfItems = intent.extras?.getString("number")?.toIntOrNull() ?: 0
+        val instrument = ArrayList<String>()
+
+        // Ensure that numberOfItems does not exceed the length of the arr array
+        val validNumberOfItems = numberOfItems.coerceAtMost(arr.size)
+
+        for (i in 0 until validNumberOfItems) {
+            instrument.add(arr[i])
+        }
+
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, instrument)
+        listView.adapter = adapter
+
+        if (instrument.isEmpty()) {
+
+            val defaultColor = ContextCompat.getColor(this, R.color.colorGreen)
+            window.decorView.setBackgroundColor(defaultColor)
+        } else {
+            // Set the background color based on the first item if the list is not empty
+            val color = ContextCompat.getColor(this, colors[0])
+            window.decorView.setBackgroundColor(color)
+        }
+
+        listView.setOnItemClickListener { _, _, position, _ ->
+            // Retrieve the color from resources and set the background color of the window
+            val color = ContextCompat.getColor(this, colors[position])
+            window.decorView.setBackgroundColor(color)
+        }
+    }
+}
+
+
+
+color
+
+
+
+<!-- res/values/colors.xml -->
+<resources>
+    <color name="colorGreen">#4B8E4B</color>
+    <color name="df">#352F68</color>
+    <color name="colorGray">#808080</color>
+    <color name="colorOrange">#FFA500</color>
+    <color name="colorPink">#FFC0CB</color>
+    <color name="colorRed">#BA7171</color>
+    <color name="colorSkyBlue">#87CEEB</color>
+    <color name="colorYellow">#D5D53E</color>
+</resources>
+
+
+
+
+-->

@@ -1,0 +1,245 @@
+<--
+
+
+xml
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Spinner
+        android:id="@+id/animationSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"/>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_below="@id/animationSpinner"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:src="@drawable/your_image" />
+
+</RelativeLayout>
+
+
+
+
+
+main
+
+
+
+
+package com.example.pract_8
+
+import android.os.Bundle
+import android.view.animation.AnimationUtils
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.Spinner
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var imageView: ImageView
+    private lateinit var spinner: Spinner
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        imageView = findViewById(R.id.imageView)
+        spinner = findViewById(R.id.animationSpinner)
+
+        // List of animations
+        val animations = listOf("None", "Fade In and Fade Out", "Rotate", "Slide Down and Up","Translate","Zoom In and Out")
+
+        // Set up the spinner adapter
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, animations)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+        // Handle item selection
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: android.view.View?, position: Int, id: Long) {
+                applyAnimation(animations[position])
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Do nothing
+            }
+        }
+    }
+
+    private fun applyAnimation(animationName: String) {
+        val animation = when (animationName) {
+            "Fade In and Fade Out" -> AnimationUtils.loadAnimation(this, R.anim.fade_in)
+            "Rotate" -> AnimationUtils.loadAnimation(this, R.anim.rotate)
+            "Slide Down and Up" -> AnimationUtils.loadAnimation(this, R.anim.slide)
+            "Translate" -> AnimationUtils.loadAnimation(this, R.anim.translate)
+            "Zoom In and Out" -> AnimationUtils.loadAnimation(this, R.anim.zoom)
+            else -> null
+        }
+        animation?.let {
+            imageView.startAnimation(it)
+        }
+    }
+}
+
+
+
+
+
+
+fade_in
+
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillAfter="true">
+
+
+    <alpha
+        android:fromAlpha="0.0"
+        android:toAlpha="1.0"
+        android:duration="2000"
+        android:startOffset="0" />
+
+    <alpha
+        android:fromAlpha="1.0"
+        android:toAlpha="0.0"
+        android:duration="2000"
+        android:startOffset="3000" />
+
+</set>
+
+
+
+
+roted
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillAfter="true">
+    <rotate
+        android:fromDegrees="0"
+        android:toDegrees="360"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:duration="2000"
+        android:startOffset="4000" />
+
+
+    <rotate
+        android:fromDegrees="0"
+        android:toDegrees="-360"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:duration="2000"
+        android:startOffset="1500" />
+
+</set>
+
+
+
+
+slide
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillAfter="true">
+    <!-- Slide Down -->
+    <translate
+        android:fromYDelta="0%"
+        android:toYDelta="100%"
+        android:duration="2000"
+        android:startOffset="4000" />
+
+    <!-- Slide Up -->
+    <translate
+        android:fromYDelta="0%"
+        android:toYDelta="-100%"
+        android:duration="2000"
+        android:startOffset="2000" />
+
+</set>
+
+
+
+trenlet
+
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillAfter="true">
+
+    <translate
+        android:fromXDelta="0%"
+        android:toXDelta="100%"
+        android:duration="2000"
+        android:startOffset="4000" />
+
+
+    <translate
+        android:fromXDelta="0%"
+        android:toXDelta="-100%"
+        android:duration="2000"
+        android:startOffset="2000" />
+
+</set>
+
+
+
+
+
+
+zoom
+
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillAfter="true">
+    <!-- Zoom In -->
+    <scale
+        android:fromXScale="1.0"
+        android:toXScale="2.0"
+        android:fromYScale="1.0"
+        android:toYScale="2.0"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:duration="2000"
+        android:startOffset="5000" />
+
+    <!-- Zoom Out -->
+    <scale
+        android:fromXScale="2.0"
+        android:toXScale="1.0"
+        android:fromYScale="2.0"
+        android:toYScale="1.0"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:duration="2000"
+        android:startOffset="2000" />
+
+</set>
+
+
+-->

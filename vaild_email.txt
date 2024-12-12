@@ -1,0 +1,173 @@
+<--
+
+
+xml
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/addemail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:textSize="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.398"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.05" />
+
+    <Button
+        android:id="@+id/btn"
+        android:layout_width="122dp"
+        android:layout_height="58dp"
+        android:text="Button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.425"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.268" />
+
+    <EditText
+        android:id="@+id/addpass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Password"
+        android:inputType="textPassword"
+        android:textSize="25dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.398"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.148" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+
+main
+
+
+
+
+
+package com.example.pro3
+
+import android.content.Intent
+import android.graphics.Color
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.util.Patterns
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var Email: EditText
+    private lateinit var Password: EditText
+    private lateinit var Login: Button
+
+    val Emails = arrayOf("jnc@gmail.com", "zeel@gmail.com", "sumit@gmail.com")
+    val Passwords = arrayOf("jnc@123", "zeel@123", "sumit@123")
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        Email = findViewById(R.id.addemail)
+        Password = findViewById(R.id.addpass)
+        Login = findViewById(R.id.btn)
+
+        val textWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                validInputs()
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        }
+
+        Email.addTextChangedListener(textWatcher)
+        Password.addTextChangedListener(textWatcher)
+
+        Login.setOnClickListener {
+            if (isPasswordCorrect()) {
+                Toast.makeText(this, "Email ID or Password", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Invalid Email ID or Password", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun validInputs(): Boolean {
+
+        val email = Email.text.toString().trim()
+        val emailPattern = Patterns.EMAIL_ADDRESS.matcher(email).matches()
+        val domainPattern = email.endsWith(".com") || email.endsWith(".in")
+
+        val emailValid = emailPattern && domainPattern
+
+        if (!emailValid) {
+            Email.error = "Invalid Email"
+            Email.setTextColor(Color.RED)
+        } else {
+            Email.error = null
+            Email.setTextColor(Color.GREEN)
+        }
+
+        val passwordValid = Password.text.toString().isNotEmpty()
+        if (!passwordValid) {
+            Password.error = "Password is Required"
+        } else {
+            Password.error = null
+        }
+
+        // Enable login button only if email, password, and the combination is correct
+        Login.isEnabled = emailValid && passwordValid && isPasswordCorrect()
+        return emailValid && passwordValid
+    }
+
+    private fun isPasswordCorrect(): Boolean {
+        val emailInput = Email.text.toString().trim()
+        val passwordInput = Password.text.toString().trim()
+
+        for (i in Emails.indices) {
+            if (emailInput == Emails[i] && passwordInput == Passwords[i]) {
+                return true
+            }
+        }
+        return false
+    }
+}
+
+
+
+
+color
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="green">#7CB37C</color>
+    <color name="red">#D17373</color>
+</resources>

@@ -1,0 +1,174 @@
+<--
+
+
+
+xml
+
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <!-- VideoView to display the video -->
+
+    <!-- Play Video Button -->
+
+    <!-- Stop Video Button -->
+
+    <VideoView
+        android:id="@+id/videoView"
+        android:layout_width="373dp"
+        android:layout_height="445dp"
+        app:layout_constraintBottom_toTopOf="@id/button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.578"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.275" />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Play video"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.053"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.736" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Stop video"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.895"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.736" />
+
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pause"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.849" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Resume"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.828"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.849" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+main
+
+
+
+
+
+package com.example.pro11
+
+import android.net.Uri
+import android.os.Bundle
+import android.widget.Button
+import android.widget.VideoView
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+
+class MainActivity : AppCompatActivity() {
+
+    private var videoView: VideoView? = null
+    private var isVideoPaused = false // To keep track of whether the video is paused or not.
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContentView(R.layout.activity_main)
+
+        // Initialize the video view and buttons
+        videoView = findViewById(R.id.videoView)
+        val playButton: Button = findViewById(R.id.button)
+        val stopButton: Button = findViewById(R.id.button2)
+        val pauseButton: Button = findViewById(R.id.button3)
+        val resumeButton: Button = findViewById(R.id.button4)
+
+        // Set the video URI (this can be a local file or a URL)
+        val videoUri = Uri.parse("android.resource://$packageName/${R.raw.lion_video}")
+        videoView?.setVideoURI(videoUri)
+
+        // Play the video when the play button is clicked
+        playButton.setOnClickListener {
+            if (!videoView?.isPlaying!!) {
+                videoView?.start()  // Start the video
+            }
+        }
+
+        // Stop the video when the stop button is clicked
+        stopButton.setOnClickListener {
+            if (videoView?.isPlaying == true) {
+                videoView?.stopPlayback()  // Stop the video
+                videoView?.resume()  // Optional: This ensures it will restart from the beginning when played again
+            }
+        }
+
+        // Pause the video when the pause button is clicked
+        pauseButton.setOnClickListener {
+            if (videoView?.isPlaying == true) {
+                videoView?.pause()  // Pause the video
+                isVideoPaused = true
+            }
+        }
+
+        // Resume the video when the resume button is clicked
+        resumeButton.setOnClickListener {
+            if (isVideoPaused) {
+                videoView?.start()  // Resume the video from where it was paused
+                isVideoPaused = false
+            }
+        }
+
+        // Optional: Set up insets listener for edge-to-edge support
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+    }
+}
+
+
+
+
+
+
+raw ma voide mkvo
+
+
+-->

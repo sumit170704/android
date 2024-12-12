@@ -1,0 +1,306 @@
+<--
+
+
+xml
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/idEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Student ID" />
+
+    <EditText
+        android:id="@+id/nameEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/idEditText"
+        android:hint="Enter Student Name" />
+
+    <EditText
+        android:id="@+id/markEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/nameEditText"
+        android:hint="Enter Student Mark" />
+
+    <Button
+        android:id="@+id/insertButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/markEditText"
+        android:text="Insert Student" />
+
+    <Button
+        android:id="@+id/updateButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/insertButton"
+        android:text="Update Student" />
+
+    <Button
+        android:id="@+id/confirmUpdateButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/updateButton"
+        android:text="Confirm Update"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/deleteButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/confirmUpdateButton"
+        android:text="Delete Student" />
+
+    <Button
+        android:id="@+id/retrieveButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/deleteButton"
+        android:text="All View Students" />
+
+    <Button
+        android:id="@+id/retrieveByIdButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/retrieveButton"
+        android:text="View Student By ID" />
+
+    <TextView
+        android:id="@+id/resultTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/retrieveByIdButton"
+        android:layout_marginTop="16dp"
+        android:text="Results "
+        android:textSize="16sp" />
+</RelativeLayout>
+
+
+
+main
+
+
+
+
+package com.example.pro13
+
+import android.content.Context
+import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteOpenHelper
+import android.os.Bundle
+import android.view.View
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.example.pro13.R
+
+class MainActivity : AppCompatActivity() {
+
+    class StudentDatabaseHelper(context: Context) : SQLiteOpenHelper(context, "student.db", null, 1) {
+
+        override fun onCreate(db: SQLiteDatabase) {
+            // Create the table
+            val createTable = "CREATE TABLE student (" +
+                    "student_id INTEGER PRIMARY KEY, " +
+                    "student_name TEXT, " +
+                    "student_mark INTEGER)"
+            db.execSQL(createTable)
+        }
+
+        override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+            db.execSQL("DROP TABLE IF EXISTS student")
+            onCreate(db)
+        }
+
+        // Insert
+        fun insertStudent(id: Int, name: String, mark: Int) {
+            val db = writableDatabase
+            val checkQuery = "SELECT * FROM student WHERE student_id = $id"
+            val cursor = db.rawQuery(checkQuery, null)
+
+            if (cursor.count > 0) {
+                cursor.close()
+                db.close()
+                throw Exception("Student ID already exists")
+            }
+
+            val insertQuery = "INSERT INTO student (student_id, student_name, student_mark) VALUES ($id, '$name', $mark)"
+            db.execSQL(insertQuery)
+            cursor.close()
+            db.close()
+        }
+
+        // Update
+        fun updateStudent(id: Int, name: String, mark: Int) {
+            val db = writableDatabase
+            val updateQuery = "UPDATE student SET student_name = '$name', student_mark = $mark WHERE student_id = $id"
+            db.execSQL(updateQuery)
+            db.close()
+        }
+
+        // Delete
+        fun deleteStudent(id: Int) {
+            val db = writableDatabase
+            val deleteQuery = "DELETE FROM student WHERE student_id = $id"
+            db.execSQL(deleteQuery)
+            db.close()
+        }
+
+        // View all students
+        fun retrieveStudents(): String {
+            val db = readableDatabase
+            val selectQuery = "SELECT * FROM student"
+            val cursor = db.rawQuery(selectQuery, null)
+            val stringBuilder = StringBuilder()
+
+            while (cursor.moveToNext()) {
+                val id = cursor.getInt(0)
+                val name = cursor.getString(1)
+                val mark = cursor.getInt(2)
+                stringBuilder.append("ID: $id, Name: $name, Mark: $mark\n")
+            }
+            cursor.close()
+            db.close()
+            return stringBuilder.toString()
+        }
+
+        // View student by ID
+        fun retrieveStudentById(id: Int): Pair<String, Int>? {
+            val db = readableDatabase
+            val selectQuery = "SELECT student_name, student_mark FROM student WHERE student_id = $id"
+            val cursor = db.rawQuery(selectQuery, null)
+
+            return if (cursor.moveToFirst()) {
+                val name = cursor.getString(0)
+                val mark = cursor.getInt(1)
+                cursor.close()
+                db.close()
+                Pair(name, mark)
+            } else {
+                cursor.close()
+                db.close()
+                null
+            }
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val dbHelper = StudentDatabaseHelper(this)
+
+        val nameEditText = findViewById<EditText>(R.id.nameEditText)
+        val markEditText = findViewById<EditText>(R.id.markEditText)
+        val idEditText = findViewById<EditText>(R.id.idEditText)
+        val resultTextView = findViewById<TextView>(R.id.resultTextView)
+
+        val insertButton = findViewById<Button>(R.id.insertButton)
+        insertButton.setOnClickListener {
+            val id = idEditText.text.toString().toIntOrNull()
+            val name = nameEditText.text.toString()
+            val mark = markEditText.text.toString().toIntOrNull()
+            if (id != null && name.isNotEmpty() && mark != null) {
+                try {
+                    dbHelper.insertStudent(id, name, mark)
+                    Toast.makeText(this, "Student inserted", Toast.LENGTH_SHORT).show()
+                    idEditText.text.clear()
+                    nameEditText.text.clear()
+                    markEditText.text.clear()
+                } catch (e: Exception) {
+                    Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(this, "Please enter valid ID, name, and mark", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        val updateButton = findViewById<Button>(R.id.updateButton)
+        updateButton.setOnClickListener {
+            val id = idEditText.text.toString().toIntOrNull()
+            if (id != null) {
+                val studentData = dbHelper.retrieveStudentById(id)
+                if (studentData != null) {
+                    nameEditText.setText(studentData.first)
+                    markEditText.setText(studentData.second.toString())
+
+                    val confirmUpdateButton = findViewById<Button>(R.id.confirmUpdateButton)
+                    confirmUpdateButton.visibility = View.VISIBLE
+                    confirmUpdateButton.setOnClickListener {
+                        val updatedName = nameEditText.text.toString()
+                        val updatedMark = markEditText.text.toString().toIntOrNull()
+                        if (updatedName.isNotEmpty() && updatedMark != null) {
+                            dbHelper.updateStudent(id, updatedName, updatedMark)
+                            Toast.makeText(this, "Student updated", Toast.LENGTH_SHORT).show()
+                            idEditText.text.clear()
+                            nameEditText.text.clear()
+                            markEditText.text.clear()
+                            confirmUpdateButton.visibility = View.GONE
+                        } else {
+                            Toast.makeText(this, "Please enter valid name and mark", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    Toast.makeText(this, "No student found with ID: $id", Toast.LENGTH_SHORT).show()
+                    nameEditText.text.clear()
+                    markEditText.text.clear()
+                }
+            } else {
+                Toast.makeText(this, "Please enter valid ID", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Delete Button
+        val deleteButton = findViewById<Button>(R.id.deleteButton)
+        deleteButton.setOnClickListener {
+            val id = idEditText.text.toString().toIntOrNull()
+            if (id != null) {
+                dbHelper.deleteStudent(id)
+                Toast.makeText(this, "Student deleted", Toast.LENGTH_SHORT).show()
+                idEditText.text.clear()
+            } else {
+                Toast.makeText(this, "Please enter valid ID", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        // Retrieve Button
+        val retrieveButton = findViewById<Button>(R.id.retrieveButton)
+        retrieveButton.setOnClickListener {
+            val students = dbHelper.retrieveStudents()
+            resultTextView.text = students.ifEmpty { "No students found." }
+        }
+
+        // Retrieve by ID Button
+        val retrieveByIdButton = findViewById<Button>(R.id.retrieveByIdButton)
+        retrieveByIdButton.setOnClickListener {
+            val id = idEditText.text.toString().toIntOrNull()
+            if (id != null) {
+                val studentData = dbHelper.retrieveStudentById(id)
+                if (studentData != null) {
+                    nameEditText.setText(studentData.first)
+                    markEditText.setText(studentData.second.toString())
+                } else {
+                    Toast.makeText(this, "No student found with ID: $id", Toast.LENGTH_SHORT).show()
+                    nameEditText.text.clear()
+                    markEditText.text.clear()
+                }
+            } else {
+                Toast.makeText(this, "Please enter valid ID", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+}
+
+
+
+-->

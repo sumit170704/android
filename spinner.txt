@@ -1,0 +1,115 @@
+xml 
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/app_name"
+        android:minHeight="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="383dp"
+        android:layout_height="545dp"
+        android:layout_marginBottom="110dp"
+        android:contentDescription="TODO"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.428"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinner"
+        app:layout_constraintVertical_bias="1.0"
+        tools:ignore="ImageContrastCheck" />
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+main
+
+
+package com.example.pro5
+
+import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.Spinner
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+
+class MainActivity : AppCompatActivity() {
+    private lateinit var spinner: Spinner
+    private lateinit var imageView: ImageView
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        spinner = findViewById(R.id.spinner)
+        imageView = findViewById(R.id.imageView)
+
+        // Get the string array from resources
+        val str = resources.getStringArray(R.array.list)
+
+        // Create an ArrayAdapter and set it to the spinner
+        val arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, str)
+        spinner.adapter = arrayAdapter
+
+        // Set an item selected listener for the spinner
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                val selectedItem = parent.getItemAtPosition(position).toString()
+                Toast.makeText(this@MainActivity, selectedItem, Toast.LENGTH_SHORT).show()
+
+                // Set imageView height (assuming you want a fixed height of 1000 pixels)
+                imageView.layoutParams.height = 1000
+
+                // Update the image resource based on the selected item
+                when (selectedItem) {
+                    "python" -> imageView.setImageResource(R.drawable.python)
+                    "css" -> imageView.setImageResource(R.drawable.css)
+                    "html" -> imageView.setImageResource(R.drawable.html)
+                    "javascript" -> imageView.setImageResource(R.drawable.javascript)
+                    "mysql" -> imageView.setImageResource(R.drawable.mysql)
+                    "php" -> imageView.setImageResource(R.drawable.php)
+                }
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Do nothing
+            }
+        }
+    }
+}
+
+
+
+
+string
+
+
+<resources>
+    <string name="app_name">img</string>
+    <string-array name="list">
+        <item>python</item>
+        <item>css</item>
+        <item>html</item>
+        <item>javascript</item>
+        <item>mysql</item>
+        <item>php</item>
+
+    </string-array>
+</resources>
